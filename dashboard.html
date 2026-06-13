@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BankerMCQ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="dashboard-shell">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidenav">
+            <div class="sidenav-header">
+                <a href="index.html" class="logo" style="font-size: 1.25rem;">
+                    <i class="fa-solid fa-building-columns"></i><span>BankerMCQ</span>
+                </a>
+            </div>
+            
+            <div class="profile-summary">
+                <div class="profile-avatar" id="user-avatar">U</div>
+                <div class="profile-name" id="user-name">Loading User...</div>
+                <div class="profile-id" id="user-id">ID: ----</div>
+                <div style="margin-top: 0.5rem;">
+                    <span class="badge" id="user-badge">Loading...</span>
+                </div>
+            </div>
+            
+            <ul class="sidenav-menu">
+                <li class="sidenav-item active"><a href="dashboard.html"><i class="fa-solid fa-house"></i> Home Dashboard</a></li>
+                <li class="sidenav-item"><a href="#active-exams-anchor"><i class="fa-solid fa-circle-play"></i> Live Test Arena</a></li>
+                <li class="sidenav-item"><a href="written.html"><i class="fa-solid fa-file-pen"></i> Written Corner</a></li>
+                <li class="sidenav-item"><a href="index.html#pricing"><i class="fa-solid fa-crown"></i> Get Premium</a></li>
+                <li class="sidenav-item"><a href="admin.html" style="border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 20px;"><i class="fa-solid fa-user-shield"></i> Admin Panel</a></li>
+                <li class="sidenav-item" onclick="Auth.logout()"><a href="#" style="color: var(--accent-danger);"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a></li>
+            </ul>
+        </aside>
+
+        <!-- Mobile Header Bar -->
+        <div class="mobile-dash-nav glass-panel">
+            <button class="menu-toggle" id="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a href="index.html" class="logo" style="font-size: 1.15rem;">
+                <i class="fa-solid fa-building-columns"></i><span>BankerMCQ</span>
+            </a>
+            <div class="profile-avatar" id="user-avatar-mobile" style="width: 35px; height: 35px; margin-bottom: 0; font-size: 0.95rem;">U</div>
+        </div>
+
+        <!-- Main Dashboard Viewport -->
+        <main class="main-content">
+            <div class="dash-header">
+                <div class="dash-title">
+                    <h1>Aspirant Dashboard</h1>
+                    <p>Track your schedule, take active mocks, and benchmark your progress.</p>
+                </div>
+                <div id="subscription-cta" class="glass-panel" style="padding: 10px 15px; border-radius: var(--border-radius-sm); border-left: 3px solid var(--accent-warning); display: none;">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-circle-exclamation" style="color: var(--accent-warning);"></i> Premium Inactive</span>
+                    <a href="index.html#pricing" class="btn btn-warning btn-sm" style="padding: 4px 8px; font-size: 0.75rem; margin-left: 10px;">Upgrade</a>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats Grid -->
+            <div class="grid-cols-3" style="margin-bottom: 2rem;">
+                <!-- Total Exams Taken -->
+                <div class="glass-card card-body" style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Mocks Attempted</span>
+                        <h2 style="font-size: 2.25rem; margin-top: 5px;" id="stat-attempts">0</h2>
+                    </div>
+                    <div style="background: var(--accent-info-glow); color: var(--accent-info); padding: 15px; border-radius: 50%; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                </div>
+                <!-- Average Accuracy -->
+                <div class="glass-card card-body" style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Avg. Preli Accuracy</span>
+                        <h2 style="font-size: 2.25rem; margin-top: 5px;" id="stat-accuracy">0%</h2>
+                    </div>
+                    <div style="background: var(--accent-success-glow); color: var(--accent-success); padding: 15px; border-radius: 50%; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                </div>
+                <!-- Global Ranking -->
+                <div class="glass-card card-body" style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Rank percentile</span>
+                        <h2 style="font-size: 2.25rem; margin-top: 5px;" id="stat-rank">--</h2>
+                    </div>
+                    <div style="background: var(--accent-warning-glow); color: var(--accent-warning); padding: 15px; border-radius: 50%; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fa-solid fa-ranking-star"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Alerts / Exam Arena -->
+            <div id="active-exams-anchor" class="dash-title" style="margin-top: 3rem; margin-bottom: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 2rem;">
+                <h2 style="font-size: 1.5rem;"><i class="fa-solid fa-circle-play" style="color: var(--accent-info); margin-right: 8px;"></i>Active Live Exams</h2>
+                <p>Submit questions within the live window to compete on the merit boards.</p>
+            </div>
+
+            <div class="grid-cols-2" id="live-exams-list" style="margin-bottom: 3rem;">
+                <!-- Dynamically populated via JS -->
+            </div>
+
+            <!-- Subject-wise Progress -->
+            <div class="dash-title" style="margin-top: 3rem; margin-bottom: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 2rem;">
+                <h2 style="font-size: 1.5rem;"><i class="fa-solid fa-chart-simple" style="color: var(--accent-success); margin-right: 8px;"></i>Subject Analytics</h2>
+                <p>Visualizing preparation strength across standard bank exam modules.</p>
+            </div>
+
+            <div class="glass-panel" style="padding: 2rem;">
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Math -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px;">
+                            <span>Quantitative Aptitude (Mathematics)</span>
+                            <strong>72% Strong</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 10px; overflow: hidden;">
+                            <div style="width: 72%; height: 100%; background: linear-gradient(90deg, var(--accent-info), var(--accent-success)); border-radius: 10px;"></div>
+                        </div>
+                    </div>
+                    <!-- English -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px;">
+                            <span>English Language & Comprehension</span>
+                            <strong>60% Strong</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 10px; overflow: hidden;">
+                            <div style="width: 60%; height: 100%; background: linear-gradient(90deg, var(--accent-info), var(--accent-success)); border-radius: 10px;"></div>
+                        </div>
+                    </div>
+                    <!-- GK -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px;">
+                            <span>General Knowledge & Central Banking</span>
+                            <strong>85% Strong</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 10px; overflow: hidden;">
+                            <div style="width: 85%; height: 100%; background: linear-gradient(90deg, var(--accent-info), var(--accent-success)); border-radius: 10px;"></div>
+                        </div>
+                    </div>
+                    <!-- IT -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px;">
+                            <span>Computer Technology & Systems</span>
+                            <strong>45% Development Area</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 10px; overflow: hidden;">
+                            <div style="width: 45%; height: 100%; background: linear-gradient(90deg, var(--accent-warning), var(--accent-danger)); border-radius: 10px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check Session & Load
+        checkAuthAndLoadProfile();
+        setupMobileMenu();
+        
+        // Populate specific avatar on mobile bar too
+        const userObj = Auth.getUser();
+        if (userObj) {
+            document.getElementById('user-avatar-mobile').textContent = userObj.avatarLetter;
+        }
+
+        // Show subscription CTA banner if free
+        const premiumStatus = Auth.getPremiumStatus();
+        const ctaEl = document.getElementById('subscription-cta');
+        if (premiumStatus === 'free' && ctaEl) {
+            ctaEl.style.display = 'block';
+        }
+
+        // Fetch user attempts statistics
+        const submissions = Database.getSubmissions();
+        const attemptsCount = submissions.length;
+        document.getElementById('stat-attempts').textContent = attemptsCount;
+        
+        if (attemptsCount > 0) {
+            // Compute average mock accuracy
+            let totalAcc = 0;
+            submissions.forEach(s => {
+                if (s.type === 'MCQ') {
+                    totalAcc += (s.score / s.total) * 100;
+                } else {
+                    totalAcc += 80; // Mock written average
+                }
+            });
+            const avgAcc = Math.round(totalAcc / attemptsCount);
+            document.getElementById('stat-accuracy').textContent = `${avgAcc}%`;
+            
+            // Calculate mock rank percentile
+            const rankPct = avgAcc > 80 ? 'Top 5%' : avgAcc > 60 ? 'Top 15%' : 'Top 40%';
+            document.getElementById('stat-rank').textContent = rankPct;
+        }
+
+        // Load Active Exams list dynamically
+        const liveExamsList = document.getElementById('live-exams-list');
+        const mcqExams = Database.getMCQExams();
+        const writtenExams = Database.getWrittenExams();
+
+        let examCardsHTML = '';
+
+        // Add MCQ Exams
+        mcqExams.forEach(exam => {
+            const hasTaken = submissions.some(s => s.examId === exam.id);
+            const btnText = hasTaken ? 'Review Attempt' : 'Start MCQ';
+            const btnClass = hasTaken ? 'btn-secondary' : 'btn-primary';
+            const disabledAttr = hasTaken ? `onclick="alert('You have already submitted this exam! Detailed rankings will be released tomorrow.')"` : `href="exam.html?id=${exam.id}"`;
+            
+            examCardsHTML += `
+                <div class="glass-card card-body" style="border-left: 4px solid var(--accent-info);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span class="badge badge-info"><i class="fa-solid fa-clock"></i> Active 24h</span>
+                        <span class="badge badge-success">Preli MCQ</span>
+                    </div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">${exam.title}</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Duration: ${exam.duration} mins | ${exam.questions.length} Core Questions</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);"><i class="fa-solid fa-users"></i> 3,420 taken</span>
+                        <a ${disabledAttr} class="btn ${btnClass}">${btnText}</a>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Add Written Exams
+        writtenExams.forEach(exam => {
+            const hasTaken = submissions.some(s => s.examId === exam.id);
+            const btnText = hasTaken ? 'Awaiting Grading' : 'Start Written';
+            const btnClass = hasTaken ? 'btn-secondary' : 'btn-warning';
+            const disabledAttr = hasTaken ? `onclick="alert('Your written answer script is currently in review. First stage OCR evaluation completed.')"` : `href="written.html?id=${exam.id}"`;
+            
+            examCardsHTML += `
+                <div class="glass-card card-body" style="border-left: 4px solid var(--accent-warning);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span class="badge badge-warning"><i class="fa-regular fa-calendar-days"></i> Active Weekly</span>
+                        <span class="badge badge-warning">Written Assessment</span>
+                    </div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">${exam.title}</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Focus: Mathematical working, translation & essay writing.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);"><i class="fa-solid fa-stamp"></i> 890 submitted</span>
+                        <a ${disabledAttr} class="btn ${btnClass}">${btnText}</a>
+                    </div>
+                </div>
+            `;
+        });
+
+        liveExamsList.innerHTML = examCardsHTML;
+    </script>
+</body>
+</html>

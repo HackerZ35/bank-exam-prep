@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Test Arena - BankerMCQ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Sidenav Drawer (Hidden/Minimized for focused test view) -->
+    <nav class="navbar glass-panel">
+        <div class="logo">
+            <i class="fa-solid fa-building-columns"></i><span>BankerMCQ Arena</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div id="test-timer" class="badge badge-warning" style="font-size: 1rem; padding: 6px 14px;">
+                <i class="fa-regular fa-clock"></i> <span id="timer-val">60:00</span>
+            </div>
+            <button onclick="confirmSubmit()" class="btn btn-success">Submit Test</button>
+        </div>
+    </nav>
+
+    <!-- Testing Layout -->
+    <div class="section-container" style="padding-top: 2rem; max-width: 1250px;">
+        <div class="dash-title" style="margin-bottom: 2rem;">
+            <h1 id="exam-title">Loading Exam...</h1>
+            <p>Read all questions carefully. There is a negative marking of <strong>0.25</strong> for every incorrect choice.</p>
+        </div>
+
+        <div class="exam-layout">
+            <!-- Questions List -->
+            <div class="exam-questions-pane" id="questions-container">
+                <!-- Dynamically populated via JS -->
+            </div>
+
+            <!-- OMR Sheet Sidebar Matrix -->
+            <div class="exam-sidebar">
+                <div class="glass-panel" style="padding: 1.5rem; position: sticky; top: 100px;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: #fff;">OMR Answer Sheet</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Click bubbles to scroll to the question directly.</p>
+                    
+                    <div style="display: flex; gap: 15px; font-size: 0.75rem; margin-bottom: 1.25rem;">
+                        <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-success);"></span> Answered</span>
+                        <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-warning);"></span> Flagged</span>
+                        <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #E2E8F0; border: 1px solid var(--border-color);"></span> Unanswered</span>
+                    </div>
+
+                    <div class="omr-grid" id="omr-grid-container">
+                        <!-- Bubbles populated dynamically -->
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); margin-top: 1.5rem; padding-top: 1.5rem;">
+                        <button onclick="confirmSubmit()" class="btn btn-primary btn-block">Submit Answer Script</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Confirmation Modal -->
+    <div id="submit-modal" class="modal-overlay">
+        <div class="glass-panel modal-box">
+            <h2><i class="fa-solid fa-circle-question" style="color: var(--accent-warning); margin-right: 8px;"></i>Submit Test?</h2>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 1.5rem;">Are you sure you want to finalize your exam sheet? You cannot modify your answers after submitting.</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="executeSubmit()" class="btn btn-success btn-block">Yes, Submit Now</button>
+                <button onclick="closeSubmitModal()" class="btn btn-secondary btn-block">No, Continue Writing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Submit Summary Modal -->
+    <div id="summary-modal" class="modal-overlay">
+        <div class="glass-panel modal-box" style="max-width: 550px;">
+            <h2 style="color: #fff;"><i class="fa-solid fa-square-poll-vertical" style="color: var(--accent-success); margin-right: 8px;"></i>Test Completed!</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Your answer sheet has been evaluated. Below are your mock details:</p>
+            
+            <div class="grid-cols-3" style="gap: 10px; margin-bottom: 2rem;">
+                <div class="glass-panel" style="padding: 10px 5px;">
+                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Correct</span>
+                    <h3 style="color: var(--accent-success); font-size: 1.5rem;" id="sum-correct">0</h3>
+                </div>
+                <div class="glass-panel" style="padding: 10px 5px;">
+                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Incorrect</span>
+                    <h3 style="color: var(--accent-danger); font-size: 1.5rem;" id="sum-wrong">0</h3>
+                </div>
+                <div class="glass-panel" style="padding: 10px 5px;">
+                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Final Score</span>
+                    <h3 style="color: var(--accent-info); font-size: 1.5rem;" id="sum-score">0</h3>
+                </div>
+            </div>
+
+            <div style="background: #F8FAFC; padding: 1.25rem; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); text-align: left; margin-bottom: 2rem; max-height: 250px; overflow-y: auto;" id="sum-explanations">
+                <!-- Explanations populated dynamically -->
+            </div>
+
+            <button onclick="window.location.href='dashboard.html'" class="btn btn-primary btn-block">Back to Dashboard</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Redirect if not logged in
+        if (!Auth.isLoggedIn()) {
+            window.location.href = 'login.html';
+        }
+
+        // Fetch target exam ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const examId = urlParams.get('id') || 'mcq-bb-ad-01';
+
+        const mcqExams = Database.getMCQExams();
+        const activeExam = mcqExams.find(e => e.id === examId);
+
+        if (!activeExam) {
+            alert('Exam not found or expired.');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Load details
+        document.getElementById('exam-title').textContent = activeExam.title;
+
+        // Render questions
+        const questionsContainer = document.getElementById('questions-container');
+        const omrGridContainer = document.getElementById('omr-grid-container');
+        
+        let questionsHTML = '';
+        let omrHTML = '';
+
+        activeExam.questions.forEach((q, idx) => {
+            questionsHTML += `
+                <div class="glass-panel question-box" id="q-block-${idx}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">Question ${idx + 1} of ${activeExam.questions.length}</span>
+                        <button onclick="toggleFlag(${idx})" class="btn btn-secondary btn-sm" style="padding: 4px 8px; font-size: 0.75rem;" id="flag-btn-${idx}">
+                            <i class="fa-regular fa-flag"></i> Flag
+                        </button>
+                    </div>
+                    <div class="question-text">${q.q}</div>
+                    <div class="option-list">
+                        ${q.options.map((opt, optIdx) => `
+                            <label class="option-label" onclick="selectAnswer(${idx}, ${optIdx})">
+                                <input type="radio" name="q-${idx}" class="option-input" id="q-${idx}-opt-${optIdx}">
+                                <div class="option-bubble"></div>
+                                <span class="option-text-val">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            omrHTML += `
+                <button onclick="scrollToQuestion(${idx})" class="omr-bubble" id="omr-bubble-${idx}">${idx + 1}</button>
+            `;
+        });
+
+        questionsContainer.innerHTML = questionsHTML;
+        omrGridContainer.innerHTML = omrHTML;
+
+        // Exam state management
+        const answersState = new Array(activeExam.questions.length).fill(null);
+        const flaggedState = new Array(activeExam.questions.length).fill(false);
+
+        function selectAnswer(qIdx, optIdx) {
+            answersState[qIdx] = optIdx;
+            
+            // Highlight OMR bubble as answered
+            const bubble = document.getElementById(`omr-bubble-${qIdx}`);
+            if (bubble) {
+                bubble.classList.add('answered');
+                bubble.classList.remove('flagged');
+                flaggedState[qIdx] = false;
+                const flagBtn = document.getElementById(`flag-btn-${qIdx}`);
+                flagBtn.className = 'btn btn-secondary btn-sm';
+            }
+        }
+
+        function toggleFlag(qIdx) {
+            const flagBtn = document.getElementById(`flag-btn-${qIdx}`);
+            const bubble = document.getElementById(`omr-bubble-${qIdx}`);
+
+            if (flaggedState[qIdx]) {
+                // Unflag
+                flaggedState[qIdx] = false;
+                flagBtn.className = 'btn btn-secondary btn-sm';
+                if (answersState[qIdx] !== null) {
+                    bubble.className = 'omr-bubble answered';
+                } else {
+                    bubble.className = 'omr-bubble';
+                }
+            } else {
+                // Flag
+                flaggedState[qIdx] = true;
+                flagBtn.className = 'btn btn-warning btn-sm';
+                bubble.className = 'omr-bubble flagged';
+            }
+        }
+
+        function scrollToQuestion(qIdx) {
+            const target = document.getElementById(`q-block-${qIdx}`);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Live countdown timer setup
+        let timeRemainingSeconds = activeExam.duration * 60;
+        const timerVal = document.getElementById('timer-val');
+
+        const timerInterval = setInterval(() => {
+            timeRemainingSeconds--;
+            
+            const mins = Math.floor(timeRemainingSeconds / 60);
+            const secs = timeRemainingSeconds % 60;
+            timerVal.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+            if (timeRemainingSeconds <= 0) {
+                clearInterval(timerInterval);
+                alert('Time is up! Auto-submitting your answer sheet.');
+                executeSubmit();
+            }
+        }, 1000);
+
+        // Submit logic
+        const submitModal = document.getElementById('submit-modal');
+        const summaryModal = document.getElementById('summary-modal');
+
+        function confirmSubmit() {
+            submitModal.classList.add('open');
+        }
+
+        function closeSubmitModal() {
+            submitModal.classList.remove('open');
+        }
+
+        function executeSubmit() {
+            clearInterval(timerInterval);
+            closeSubmitModal();
+
+            // Grading algorithm
+            let correctCount = 0;
+            let wrongCount = 0;
+            let explanationHTML = '<h3>Review Answers:</h3><br>';
+
+            activeExam.questions.forEach((q, idx) => {
+                const userAns = answersState[idx];
+                const isCorrect = userAns === q.correct;
+
+                if (userAns !== null) {
+                    if (isCorrect) {
+                        correctCount++;
+                    } else {
+                        wrongCount++;
+                    }
+                }
+
+                const userSelectedText = userAns !== null ? q.options[userAns] : 'Not Answered';
+                const correctText = q.options[q.correct];
+                const statusColor = isCorrect ? 'color: var(--accent-success)' : userAns === null ? 'color: var(--text-secondary)' : 'color: var(--accent-danger)';
+                const statusSymbol = isCorrect ? '<i class="fa-solid fa-circle-check"></i>' : userAns === null ? '<i class="fa-regular fa-circle"></i>' : '<i class="fa-solid fa-circle-xmark"></i>';
+
+                explanationHTML += `
+                    <div style="margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem;">
+                        <strong style="display:block; margin-bottom: 5px;">Q${idx + 1}: ${q.q}</strong>
+                        <span style="${statusColor}; font-size: 0.85rem; display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+                            ${statusSymbol} Your Choice: ${userSelectedText}
+                        </span>
+                        <span style="color: var(--accent-success); font-size: 0.85rem; display:block; margin-bottom: 8px;">
+                            <i class="fa-solid fa-circle-check"></i> Correct Solution: ${correctText}
+                        </span>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; padding-left: 10px; border-left: 2px solid var(--accent-info);">
+                            <strong>Explanation:</strong> ${q.explanation}
+                        </p>
+                    </div>
+                `;
+            });
+
+            const finalScore = parseFloat((correctCount - (wrongCount * 0.25)).toFixed(2));
+
+            // Set modal values
+            document.getElementById('sum-correct').textContent = correctCount;
+            document.getElementById('sum-wrong').textContent = wrongCount;
+            document.getElementById('sum-score').textContent = finalScore;
+            document.getElementById('sum-explanations').innerHTML = explanationHTML;
+
+            // Save submission to DB
+            Database.addSubmission({
+                examId: activeExam.id,
+                examTitle: activeExam.title,
+                type: 'MCQ',
+                score: finalScore,
+                total: activeExam.questions.length,
+                correct: correctCount,
+                wrong: wrongCount
+            });
+
+            summaryModal.classList.add('open');
+        }
+    </script>
+</body>
+</html>

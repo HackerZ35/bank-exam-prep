@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Written corner - BankerMCQ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="dashboard-shell">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidenav">
+            <div class="sidenav-header">
+                <a href="index.html" class="logo" style="font-size: 1.25rem;">
+                    <i class="fa-solid fa-building-columns"></i><span>BankerMCQ</span>
+                </a>
+            </div>
+            
+            <div class="profile-summary">
+                <div class="profile-avatar" id="user-avatar">U</div>
+                <div class="profile-name" id="user-name">Loading User...</div>
+                <div class="profile-id" id="user-id">ID: ----</div>
+                <div style="margin-top: 0.5rem;">
+                    <span class="badge" id="user-badge">Loading...</span>
+                </div>
+            </div>
+            
+            <ul class="sidenav-menu">
+                <li class="sidenav-item"><a href="dashboard.html"><i class="fa-solid fa-house"></i> Home Dashboard</a></li>
+                <li class="sidenav-item"><a href="dashboard.html#active-exams-anchor"><i class="fa-solid fa-circle-play"></i> Live Test Arena</a></li>
+                <li class="sidenav-item active"><a href="written.html"><i class="fa-solid fa-file-pen"></i> Written Corner</a></li>
+                <li class="sidenav-item"><a href="index.html#pricing"><i class="fa-solid fa-crown"></i> Get Premium</a></li>
+                <li class="sidenav-item"><a href="admin.html" style="border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 20px;"><i class="fa-solid fa-user-shield"></i> Admin Panel</a></li>
+                <li class="sidenav-item" onclick="Auth.logout()"><a href="#" style="color: var(--accent-danger);"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a></li>
+            </ul>
+        </aside>
+
+        <!-- Mobile Header Bar -->
+        <div class="mobile-dash-nav glass-panel">
+            <button class="menu-toggle" id="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a href="index.html" class="logo" style="font-size: 1.15rem;">
+                <i class="fa-solid fa-building-columns"></i><span>BankerMCQ</span>
+            </a>
+            <div class="profile-avatar" id="user-avatar-mobile" style="width: 35px; height: 35px; margin-bottom: 0; font-size: 0.95rem;">U</div>
+        </div>
+
+        <!-- Main Written Content -->
+        <main class="main-content">
+            <div class="dash-header">
+                <div class="dash-title">
+                    <h1>Written Mock Exam Corner</h1>
+                    <p>Government Bank exams feature extensive written papers. Answer below or upload your scripts.</p>
+                </div>
+            </div>
+
+            <!-- Active Written Exam Info -->
+            <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem; border-left: 4px solid var(--accent-warning);">
+                <span class="badge badge-warning" style="margin-bottom: 1rem;">Active Model Test</span>
+                <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;" id="written-exam-title">Loading Written Test...</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Submit your drafts by writing below or uploading physical sheets before the submission deadline.</p>
+            </div>
+
+            <!-- Exam Split Layout -->
+            <div class="grid-cols-2" style="align-items: flex-start; gap: 2rem;">
+                
+                <!-- Questions Column -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;" id="written-questions-pane">
+                    <!-- Questions will populate dynamically -->
+                </div>
+
+                <!-- Answer Submission Column -->
+                <div class="glass-panel" style="padding: 2rem;">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem; color: #fff;">Answer Script Submission</h3>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Method 1: Text Entry -->
+                        <div class="form-group">
+                            <label for="written-textbox">Method A: Type your Answers directly (e.g. GK, translation drafts)</label>
+                            <textarea id="written-textbox" class="form-control" rows="8" placeholder="Type your answers here..."></textarea>
+                        </div>
+
+                        <!-- Method 2: Uploader -->
+                        <div class="form-group">
+                            <label>Method B: Upload photos of handwritten scripts (e.g. Math steps, long essays)</label>
+                            <div class="upload-dropzone" onclick="triggerFileSelect()">
+                                <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                                <h4 style="font-weight: 500; font-size: 0.95rem;">Drag & Drop files or click to Browse</h4>
+                                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px;">Supports PDF, JPEG, PNG up to 15MB</p>
+                                <div class="upload-filename" id="selected-file-name" style="display: none;"></div>
+                                
+                                <div class="progress-bar-container" id="upload-progress-container">
+                                    <div class="progress-bar" id="upload-progress-bar"></div>
+                                </div>
+                            </div>
+                            <input type="file" id="file-uploader" style="display: none;" onchange="handleFileSelected(event)">
+                        </div>
+
+                        <button onclick="submitWrittenAnswers()" class="btn btn-warning btn-block" style="margin-top: 1rem;">
+                            <i class="fa-solid fa-circle-check"></i> Submit Written Answers
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Submission success modal -->
+    <div id="written-modal" class="modal-overlay">
+        <div class="glass-panel modal-box">
+            <h2><i class="fa-solid fa-circle-check" style="color: var(--accent-success); margin-right: 8px;"></i>Written Script Submitted</h2>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 1.5rem;">Your script has been saved. The initial OCR engine will read it, followed by teacher evaluation.</p>
+            <button onclick="window.location.href='dashboard.html'" class="btn btn-primary btn-block">Go to Dashboard</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check Auth
+        checkAuthAndLoadProfile();
+        setupMobileMenu();
+
+        // Populate specific avatar on mobile bar too
+        const userObj = Auth.getUser();
+        if (userObj) {
+            document.getElementById('user-avatar-mobile').textContent = userObj.avatarLetter;
+        }
+
+        // Load active written exam details
+        const urlParams = new URLSearchParams(window.location.search);
+        const examId = urlParams.get('id') || 'writ-bb-ad-01';
+
+        const writtenExams = Database.getWrittenExams();
+        const activeExam = writtenExams.find(e => e.id === examId);
+
+        if (!activeExam) {
+            alert('Written Exam not found or expired.');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Set Title
+        document.getElementById('written-exam-title').textContent = activeExam.title;
+
+        // Render Questions
+        const questionsPane = document.getElementById('written-questions-pane');
+        let questionsHTML = '';
+
+        activeExam.questions.forEach((q) => {
+            questionsHTML += `
+                <div class="glass-panel card-body">
+                    <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 0.5rem;">${q.title}</h3>
+                    <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); white-space: pre-wrap;">${q.instruction}</p>
+                </div>
+            `;
+        });
+
+        questionsPane.innerHTML = questionsHTML;
+
+        // Script upload handler
+        let selectedFile = null;
+
+        function triggerFileSelect() {
+            document.getElementById('file-uploader').click();
+        }
+
+        function handleFileSelected(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const fileNameDiv = document.getElementById('selected-file-name');
+                const progressContainer = document.getElementById('upload-progress-container');
+                const progressBar = document.getElementById('upload-progress-bar');
+
+                fileNameDiv.textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                fileNameDiv.style.display = 'block';
+
+                // Simulate progress bar upload animation
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                
+                let width = 0;
+                const uploadInterval = setInterval(() => {
+                    width += 15;
+                    progressBar.style.width = `${width}%`;
+                    if (width >= 100) {
+                        clearInterval(uploadInterval);
+                        progressBar.style.background = 'var(--accent-success)';
+                    }
+                }, 100);
+            }
+        }
+
+        function submitWrittenAnswers() {
+            const textContent = document.getElementById('written-textbox').value.trim();
+            
+            if (!textContent && !selectedFile) {
+                alert('Please type an answer or select a handwritten photo to submit!');
+                return;
+            }
+
+            // Save submission to database
+            Database.addSubmission({
+                examId: activeExam.id,
+                examTitle: activeExam.title,
+                type: 'Written',
+                textContent: textContent,
+                fileName: selectedFile ? selectedFile.name : null,
+                score: null // Pending human evaluation
+            });
+
+            // Show confirmation Modal
+            document.getElementById('written-modal').classList.add('open');
+        }
+    </script>
+</body>
+</html>

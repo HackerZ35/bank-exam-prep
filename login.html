@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankerMCQ - Sign In / Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Back Navigation Navbar -->
+    <nav class="navbar glass-panel" style="position: static;">
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-building-columns"></i><span>BankerMCQ</span>
+        </a>
+        <a href="index.html" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Home
+        </a>
+    </nav>
+
+    <!-- Main Auth Card Container -->
+    <div class="auth-container">
+        <div class="glass-panel auth-card animate-fade-in">
+            <!-- Tabs for switching modes -->
+            <div class="auth-tabs">
+                <button id="tab-login" class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+                <button id="tab-register" class="auth-tab" onclick="switchTab('register')">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="form-login-container">
+                <h2 style="margin-bottom: 0.5rem; text-align: left; font-size: 1.5rem;">Welcome Back</h2>
+                <p style="color: var(--text-secondary); text-align: left; font-size: 0.9rem; margin-bottom: 1.5rem;">Enter your details to access your dashboard</p>
+                
+                <form id="form-login" onsubmit="handleAuthSubmit(event, 'login')">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="name@domain.com" required value="candidate@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-pass">Password</label>
+                        <input type="password" id="login-pass" class="form-control" placeholder="••••••••" required value="password123">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1.5rem;">
+                        Sign In <i class="fa-solid fa-right-to-bracket"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Register Form (Hidden by default) -->
+            <div id="form-register-container" style="display: none;">
+                <h2 style="margin-bottom: 0.5rem; text-align: left; font-size: 1.5rem;">Create Account</h2>
+                <p style="color: var(--text-secondary); text-align: left; font-size: 0.9rem; margin-bottom: 1.5rem;">Join thousands of bank prep candidates</p>
+                
+                <form id="form-register" onsubmit="handleAuthSubmit(event, 'register')">
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" class="form-control" placeholder="name@domain.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-pass">Create Password</label>
+                        <input type="password" id="reg-pass" class="form-control" placeholder="Min. 8 characters" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">Phone Number (Optional - for OTP alerts)</label>
+                        <input type="text" id="reg-phone" class="form-control" placeholder="+8801xxxxxxxxx">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1.5rem;">
+                        Register Account <i class="fa-solid fa-user-plus"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Alternative Auth Separator -->
+            <div class="divider">Or continue with</div>
+
+            <!-- Social Auth Logins -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="handleGoogleSignIn()" class="btn btn-secondary btn-block" style="background: #FFFFFF; border: 1px solid var(--border-card);">
+                    <i class="fa-brands fa-google" style="color: #ea4335;"></i> Google Account
+                </button>
+                <button onclick="handleOTPSignIn()" class="btn btn-secondary btn-block" style="background: #FFFFFF; border: 1px solid var(--border-card);">
+                    <i class="fa-solid fa-mobile-screen-button" style="color: var(--accent-success);"></i> Phone / SMS OTP
+                </button>
+            </div>
+            
+            <p style="margin-top: 2rem; font-size: 0.75rem; color: var(--text-secondary);">
+                By signing up, you agree to our Terms of Service & Privacy Policy.
+            </p>
+        </div>
+    </div>
+
+    <!-- OTP Input Modal (Simulated) -->
+    <div id="otp-modal" class="modal-overlay">
+        <div class="glass-panel modal-box">
+            <h2 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-shield-halved" style="color: var(--accent-success); margin-right: 8px;"></i>SMS Verification</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">We have sent a mock 4-digit code to your phone number.</p>
+            <div class="form-group">
+                <input type="text" id="otp-code" class="form-control" placeholder="Enter code (e.g. 1234)" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.3em;" maxlength="4" value="1234">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
+                <button onclick="confirmOTP()" class="btn btn-success btn-block">Verify & Log In</button>
+                <button onclick="closeOTPModal()" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Redirect if already logged in
+        if (Auth.isLoggedIn()) {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Handle URL parameters (check if user wants register tab pre-selected)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('register') === 'true') {
+            switchTab('register');
+        }
+
+        function switchTab(mode) {
+            const loginBtn = document.getElementById('tab-login');
+            const registerBtn = document.getElementById('tab-register');
+            const loginForm = document.getElementById('form-login-container');
+            const registerForm = document.getElementById('form-register-container');
+
+            if (mode === 'login') {
+                loginBtn.classList.add('active');
+                registerBtn.classList.remove('active');
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginBtn.classList.remove('active');
+                registerBtn.classList.add('active');
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        // Form Submit handler
+        function handleAuthSubmit(event, mode) {
+            event.preventDefault();
+            let email = '';
+            if (mode === 'login') {
+                email = document.getElementById('login-email').value;
+            } else {
+                email = document.getElementById('reg-email').value;
+            }
+            Auth.login(email);
+            window.location.href = 'dashboard.html';
+        }
+
+        // Google Authentication simulation
+        function handleGoogleSignIn() {
+            Auth.login('google.candidate@gmail.com');
+            alert('Simulating Google Auth: Access granted!');
+            window.location.href = 'dashboard.html';
+        }
+
+        // SMS OTP Authentication simulation
+        const otpModal = document.getElementById('otp-modal');
+        function handleOTPSignIn() {
+            const phone = prompt("Enter your mobile number:", "+8801712345678");
+            if (phone) {
+                otpModal.classList.add('open');
+            }
+        }
+        
+        function closeOTPModal() {
+            otpModal.classList.remove('open');
+        }
+
+        function confirmOTP() {
+            Auth.login('sms.candidate@gmail.com');
+            closeOTPModal();
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

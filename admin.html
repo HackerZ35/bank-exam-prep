@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BankerMCQ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="dashboard-shell">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidenav">
+            <div class="sidenav-header">
+                <a href="index.html" class="logo" style="font-size: 1.25rem;">
+                    <i class="fa-solid fa-building-columns"></i><span>BankerMCQ</span>
+                </a>
+            </div>
+            
+            <div class="profile-summary" style="background: #FEF2F2; border-bottom-color: #FEE2E2;">
+                <div class="profile-avatar" style="background: linear-gradient(135deg, var(--accent-danger) 0%, #7f1d1d 100%);">A</div>
+                <div class="profile-name">Admin Moderator</div>
+                <div class="profile-id">Role: Moderator Panel</div>
+                <div style="margin-top: 0.5rem;">
+                    <span class="badge badge-danger">SYSTEM ROOT</span>
+                </div>
+            </div>
+            
+            <ul class="sidenav-menu">
+                <li class="sidenav-item"><a href="dashboard.html"><i class="fa-solid fa-house"></i> Student Dashboard</a></li>
+                <li class="sidenav-item active"><a href="admin.html"><i class="fa-solid fa-user-shield"></i> Question Creator</a></li>
+                <li class="sidenav-item" onclick="Auth.logout()"><a href="#" style="color: var(--accent-danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout Admin</a></li>
+            </ul>
+        </aside>
+
+        <!-- Mobile Header Bar -->
+        <div class="mobile-dash-nav glass-panel" style="border-bottom-color: rgba(239,68,68,0.2);">
+            <button class="menu-toggle" id="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a href="index.html" class="logo" style="font-size: 1.15rem;">
+                <i class="fa-solid fa-building-columns"></i><span>BankerMCQ</span>
+            </a>
+            <div class="profile-avatar" style="width: 35px; height: 35px; margin-bottom: 0; font-size: 0.95rem; background: var(--accent-danger);">A</div>
+        </div>
+
+        <!-- Main Content Pane -->
+        <main class="main-content">
+            <div class="dash-header">
+                <div class="dash-title">
+                    <h1>Question bank Manager</h1>
+                    <p>Easily input MCQ tests, written focus assessments, and review student grades.</p>
+                </div>
+            </div>
+
+            <!-- Tab Selectors -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" id="tab-mcq-creator" onclick="switchAdminTab('mcq')">
+                    <i class="fa-solid fa-file-circle-plus"></i> Create MCQ Mock
+                </button>
+                <button class="admin-tab" id="tab-written-creator" onclick="switchAdminTab('written')">
+                    <i class="fa-solid fa-keyboard"></i> Create Written Mock
+                </button>
+                <button class="admin-tab" id="tab-results-manager" onclick="switchAdminTab('results')">
+                    <i class="fa-solid fa-clipboard-list"></i> Review Scripts (<span id="submission-count-badge">0</span>)
+                </button>
+            </div>
+
+            <!-- Tab 1 Content: MCQ Creator -->
+            <div id="content-mcq-creator">
+                <div class="grid-cols-2" style="align-items: flex-start; gap: 2rem;">
+                    
+                    <!-- Exam Details & Add Question Form -->
+                    <div class="glass-panel card-body">
+                        <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem; color: #fff;">1. Set Exam Details</h3>
+                        <div class="form-group">
+                            <label for="mcq-title">Exam Title (e.g. Bangladesh Bank Cash Officer Model Test - 02)</label>
+                            <input type="text" id="mcq-title" class="form-control" placeholder="Enter test name..." value="Sonali Bank Officer Model Test - 01">
+                        </div>
+                        <div class="grid-cols-2" style="gap: 1rem;">
+                            <div class="form-group">
+                                <label for="mcq-duration">Duration (Minutes)</label>
+                                <input type="number" id="mcq-duration" class="form-control" value="60">
+                            </div>
+                            <div class="form-group">
+                                <label for="mcq-date">Active Date / Schedule</label>
+                                <input type="text" id="mcq-date" class="form-control" value="Live Now (24h)">
+                            </div>
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+                        <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem; color: #fff;">2. Append MCQ Question</h3>
+                        
+                        <div class="form-group">
+                            <label for="q-text">Question Text</label>
+                            <input type="text" id="q-text" class="form-control" placeholder="Type question...">
+                        </div>
+                        
+                        <div class="grid-cols-2" style="gap: 10px;">
+                            <div class="form-group">
+                                <label for="q-opt-0">Option A</label>
+                                <input type="text" id="q-opt-0" class="form-control" placeholder="Option A">
+                            </div>
+                            <div class="form-group">
+                                <label for="q-opt-1">Option B</label>
+                                <input type="text" id="q-opt-1" class="form-control" placeholder="Option B">
+                            </div>
+                            <div class="form-group">
+                                <label for="q-opt-2">Option C</label>
+                                <input type="text" id="q-opt-2" class="form-control" placeholder="Option C">
+                            </div>
+                            <div class="form-group">
+                                <label for="q-opt-3">Option D</label>
+                                <input type="text" id="q-opt-3" class="form-control" placeholder="Option D">
+                            </div>
+                        </div>
+
+                        <div class="grid-cols-2" style="gap: 10px;">
+                            <div class="form-group">
+                                <label for="q-correct">Correct Option</label>
+                                <select id="q-correct" class="form-control">
+                                    <option value="0">Option A</option>
+                                    <option value="1">Option B</option>
+                                    <option value="2">Option C</option>
+                                    <option value="3">Option D</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="q-exp">Short Explanation (shown after submission)</label>
+                                <input type="text" id="q-exp" class="form-control" placeholder="Type explanation details...">
+                            </div>
+                        </div>
+
+                        <button onclick="addQuestionToList()" class="btn btn-secondary btn-block" style="margin-top: 1rem;">
+                            <i class="fa-solid fa-plus"></i> Add Question to List
+                        </button>
+                    </div>
+
+                    <!-- Questions List Preview & Publish -->
+                    <div class="glass-panel card-body">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="font-size: 1.25rem; color: #fff;">Questions Added (<span id="q-added-count">0</span>)</h3>
+                            <button onclick="publishMCQExam()" class="btn btn-success">
+                                <i class="fa-solid fa-share-from-square"></i> Publish Mock Exam
+                            </button>
+                        </div>
+
+                        <div class="preview-list" id="q-preview-container">
+                            <p style="color: var(--text-secondary); text-align: center; margin: 3rem 0;">No questions added yet. Fill the left form and click "Add Question".</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Tab 2 Content: Written Creator -->
+            <div id="content-written-creator" style="display: none;">
+                <div class="glass-panel card-body" style="max-width: 700px; margin: 0 auto;">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem; color: #fff;">Create Written Model Test</h3>
+                    
+                    <div class="form-group">
+                        <label for="written-title">Written Exam Title (e.g. Combined Central Bank AD Written Mock - 01)</label>
+                        <input type="text" id="written-title" class="form-control" placeholder="Enter written exam title..." value="Combined 5-Bank Cash Written Mock - 01">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="written-date">Active Date / Schedule</label>
+                        <input type="text" id="written-date" class="form-control" value="Active Weekly">
+                    </div>
+
+                    <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+                    <h4 style="margin-bottom: 1rem; color: var(--accent-warning);">Exam Section Sheets</h4>
+                    
+                    <div class="form-group">
+                        <label for="written-q1">Section 1: Focus Writing Essay Prompt</label>
+                        <textarea id="written-q1" class="form-control" rows="3" placeholder="Essay instructions..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="written-q2">Section 2: Mathematics Problem Working</label>
+                        <textarea id="written-q2" class="form-control" rows="3" placeholder="Math solution prompts..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="written-q3">Section 3: Translation Passage Prompt</label>
+                        <textarea id="written-q3" class="form-control" rows="3" placeholder="Translation passage prompts..."></textarea>
+                    </div>
+
+                    <button onclick="publishWrittenExam()" class="btn btn-warning btn-block" style="margin-top: 1.5rem;">
+                        <i class="fa-solid fa-share-from-square"></i> Save & Publish Written Exam
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 3 Content: Submissions reviewer -->
+            <div id="content-results-manager" style="display: none;">
+                <div class="glass-panel card-body">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem; color: #fff;">Aspirant Submissions Tracker</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-secondary);">
+                                    <th style="padding: 12px 8px;">Timestamp</th>
+                                    <th style="padding: 12px 8px;">Exam Title</th>
+                                    <th style="padding: 12px 8px;">Exam Type</th>
+                                    <th style="padding: 12px 8px;">Submissions Data</th>
+                                    <th style="padding: 12px 8px;">Score</th>
+                                    <th style="padding: 12px 8px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="submissions-table-body">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Script grading detail modal (Simulated) -->
+    <div id="grade-modal" class="modal-overlay">
+        <div class="glass-panel modal-box" style="max-width: 550px; text-align: left;">
+            <h2 style="margin-bottom: 1rem;"><i class="fa-solid fa-marker" style="color: var(--accent-warning); margin-right: 8px;"></i>Grade Written Script</h2>
+            
+            <div style="margin-bottom: 1.5rem; background: #F8FAFC; padding: 1rem; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color);">
+                <p><strong>Aspirant typed answers:</strong></p>
+                <p id="grade-txt-content" style="font-size: 0.85rem; color: var(--text-secondary); white-space: pre-wrap; margin-top: 8px;">None</p>
+                
+                <p style="margin-top: 15px;"><strong>Handwritten page file:</strong></p>
+                <p id="grade-file-content" style="font-size: 0.85rem; color: var(--accent-success); margin-top: 8px;">None</p>
+            </div>
+
+            <div class="form-group">
+                <label for="grade-value">Assign Score (Max 100)</label>
+                <input type="number" id="grade-value" class="form-control" value="82">
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 2rem;">
+                <button onclick="saveWrittenGrade()" class="btn btn-success btn-block">Confirm Grade</button>
+                <button onclick="closeGradeModal()" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check Session
+        checkAuthAndLoadProfile();
+        setupMobileMenu();
+
+        // Admin Tab switching
+        function switchAdminTab(tab) {
+            const mcqTab = document.getElementById('tab-mcq-creator');
+            const writtenTab = document.getElementById('tab-written-creator');
+            const resultsTab = document.getElementById('tab-results-manager');
+
+            const mcqContent = document.getElementById('content-mcq-creator');
+            const writtenContent = document.getElementById('content-written-creator');
+            const resultsContent = document.getElementById('content-results-manager');
+
+            mcqTab.classList.remove('active');
+            writtenTab.classList.remove('active');
+            resultsTab.classList.remove('active');
+
+            mcqContent.style.display = 'none';
+            writtenContent.style.display = 'none';
+            resultsContent.style.display = 'none';
+
+            if (tab === 'mcq') {
+                mcqTab.classList.add('active');
+                mcqContent.style.display = 'block';
+            } else if (tab === 'written') {
+                writtenTab.classList.add('active');
+                writtenContent.style.display = 'block';
+            } else {
+                resultsTab.classList.add('active');
+                resultsContent.style.display = 'block';
+                loadSubmissionsTable();
+            }
+        }
+
+        // --- MCQ BUILDER LOGIC ---
+        let currentQuestionsList = [];
+
+        function addQuestionToList() {
+            const qText = document.getElementById('q-text').value.trim();
+            const opt0 = document.getElementById('q-opt-0').value.trim();
+            const opt1 = document.getElementById('q-opt-1').value.trim();
+            const opt2 = document.getElementById('q-opt-2').value.trim();
+            const opt3 = document.getElementById('q-opt-3').value.trim();
+            const correctOpt = parseInt(document.getElementById('q-correct').value);
+            const explanation = document.getElementById('q-exp').value.trim();
+
+            if (!qText || !opt0 || !opt1 || !opt2 || !opt3) {
+                alert('Please fill out the question text and all four options!');
+                return;
+            }
+
+            const qObj = {
+                q: qText,
+                options: [opt0, opt1, opt2, opt3],
+                correct: correctOpt,
+                explanation: explanation || 'Standard bank exam solution explanation.'
+            };
+
+            currentQuestionsList.push(qObj);
+
+            // Update UI count
+            document.getElementById('q-added-count').textContent = currentQuestionsList.length;
+
+            // Clear inputs
+            document.getElementById('q-text').value = '';
+            document.getElementById('q-opt-0').value = '';
+            document.getElementById('q-opt-1').value = '';
+            document.getElementById('q-opt-2').value = '';
+            document.getElementById('q-opt-3').value = '';
+            document.getElementById('q-exp').value = '';
+
+            renderQuestionsPreview();
+        }
+
+        function renderQuestionsPreview() {
+            const container = document.getElementById('q-preview-container');
+            if (currentQuestionsList.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-secondary); text-align: center; margin: 3rem 0;">No questions added yet. Fill the left form and click "Add Question".</p>`;
+                return;
+            }
+
+            let previewHTML = '';
+            currentQuestionsList.forEach((q, idx) => {
+                previewHTML += `
+                    <div class="preview-item">
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>Q${idx + 1}: ${q.q}</strong>
+                            <button onclick="deleteQuestion(${idx})" class="btn btn-secondary btn-sm" style="padding: 2px 6px; color: var(--accent-danger);"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <ul style="list-style: none; margin-top: 10px; font-size: 0.85rem; color: var(--text-secondary); display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                            <li>A: ${q.options[0]} ${q.correct === 0 ? '<span style="color:var(--accent-success);font-weight:bold;">(Correct)</span>':''}</li>
+                            <li>B: ${q.options[1]} ${q.correct === 1 ? '<span style="color:var(--accent-success);font-weight:bold;">(Correct)</span>':''}</li>
+                            <li>C: ${q.options[2]} ${q.correct === 2 ? '<span style="color:var(--accent-success);font-weight:bold;">(Correct)</span>':''}</li>
+                            <li>D: ${q.options[3]} ${q.correct === 3 ? '<span style="color:var(--accent-success);font-weight:bold;">(Correct)</span>':''}</li>
+                        </ul>
+                    </div>
+                `;
+            });
+            container.innerHTML = previewHTML;
+        }
+
+        function deleteQuestion(idx) {
+            currentQuestionsList.splice(idx, 1);
+            document.getElementById('q-added-count').textContent = currentQuestionsList.length;
+            renderQuestionsPreview();
+        }
+
+        function publishMCQExam() {
+            const title = document.getElementById('mcq-title').value.trim();
+            const duration = parseInt(document.getElementById('mcq-duration').value);
+            const date = document.getElementById('mcq-date').value.trim();
+
+            if (!title) {
+                alert('Please enter an exam title!');
+                return;
+            }
+
+            if (currentQuestionsList.length === 0) {
+                alert('Please add at least one question before publishing!');
+                return;
+            }
+
+            const newExam = {
+                id: 'mcq-custom-' + Date.now(),
+                title: title,
+                duration: duration || 60,
+                date: date || 'Live Now',
+                questions: currentQuestionsList
+            };
+
+            const existingExams = Database.getMCQExams();
+            existingExams.push(newExam);
+            Database.saveMCQExams(existingExams);
+
+            alert('Success! MCQ Mock Exam published. It will now appear on student dashboards.');
+            
+            // Reset state
+            currentQuestionsList = [];
+            document.getElementById('q-added-count').textContent = '0';
+            document.getElementById('mcq-title').value = 'Sonali Bank Officer Model Test - 02';
+            renderQuestionsPreview();
+        }
+
+        // --- WRITTEN BUILDER LOGIC ---
+        function publishWrittenExam() {
+            const title = document.getElementById('written-title').value.trim();
+            const date = document.getElementById('written-date').value.trim();
+            
+            const q1 = document.getElementById('written-q1').value.trim();
+            const q2 = document.getElementById('written-q2').value.trim();
+            const q3 = document.getElementById('written-q3').value.trim();
+
+            if (!title) {
+                alert('Please enter a written test title!');
+                return;
+            }
+
+            if (!q1 && !q2 && !q3) {
+                alert('Please fill out at least one written question field!');
+                return;
+            }
+
+            const questions = [];
+            if (q1) questions.push({ title: '1. Focus Writing Essay', instruction: q1 });
+            if (q2) questions.push({ title: '2. Mathematical Workings', instruction: q2 });
+            if (q3) questions.push({ title: '3. English-Bengali Translation', instruction: q3 });
+
+            const newExam = {
+                id: 'written-custom-' + Date.now(),
+                title: title,
+                date: date || 'Active Weekly',
+                questions: questions
+            };
+
+            const existingExams = Database.getWrittenExams();
+            existingExams.push(newExam);
+            Database.saveWrittenExams(existingExams);
+
+            alert('Success! Written Exam published to student panels.');
+
+            // Clear inputs
+            document.getElementById('written-q1').value = '';
+            document.getElementById('written-q2').value = '';
+            document.getElementById('written-q3').value = '';
+        }
+
+        // --- SUBMISSION MANAGER LOGIC ---
+        let loadedSubmissions = [];
+        let activeGradeSubId = null;
+
+        function updateBadgeCount() {
+            const count = Database.getSubmissions().length;
+            document.getElementById('submission-count-badge').textContent = count;
+        }
+        updateBadgeCount();
+
+        function loadSubmissionsTable() {
+            updateBadgeCount();
+            loadedSubmissions = Database.getSubmissions();
+            const tableBody = document.getElementById('submissions-table-body');
+            
+            if (loadedSubmissions.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 3rem; text-align: center; color: var(--text-secondary);">
+                            No student test submissions found in local database.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let rowsHTML = '';
+            loadedSubmissions.forEach(sub => {
+                let scoreDisplay = '';
+                let dataDisplay = '';
+                let actionBtn = '';
+
+                if (sub.type === 'MCQ') {
+                    scoreDisplay = `<strong style="color: var(--accent-success);">${sub.score}</strong> / ${sub.total}`;
+                    dataDisplay = `Correct: ${sub.correct}, Wrong: ${sub.wrong}`;
+                    actionBtn = `<span class="badge badge-success">Evaluated</span>`;
+                } else {
+                    scoreDisplay = sub.score !== null ? `<strong style="color:var(--accent-warning);">${sub.score}</strong>` : `<span style="color:var(--text-secondary);">Pending</span>`;
+                    dataDisplay = sub.fileName ? `Uploaded: ${sub.fileName}` : `Typed: ${sub.textContent.substring(0, 30)}...`;
+                    actionBtn = `<button onclick="openGradeModal('${sub.id}')" class="btn btn-primary btn-sm" style="padding: 4px 8px; font-size: 0.75rem;"><i class="fa-solid fa-pen"></i> Grade</button>`;
+                }
+
+                rowsHTML += `
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                        <td style="padding: 12px 8px; font-size: 0.8rem;">${sub.timestamp}</td>
+                        <td style="padding: 12px 8px; color: #fff; font-weight: 500;">${sub.examTitle}</td>
+                        <td style="padding: 12px 8px;"><span class="badge ${sub.type === 'MCQ' ? 'badge-info' : 'badge-warning'}">${sub.type}</span></td>
+                        <td style="padding: 12px 8px; font-size: 0.8rem; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${dataDisplay}</td>
+                        <td style="padding: 12px 8px;">${scoreDisplay}</td>
+                        <td style="padding: 12px 8px;">${actionBtn}</td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = rowsHTML;
+        }
+
+        // Written grading modal controller
+        const gradeModal = document.getElementById('grade-modal');
+
+        function openGradeModal(subId) {
+            activeGradeSubId = subId;
+            const sub = loadedSubmissions.find(s => s.id === subId);
+            if (sub) {
+                document.getElementById('grade-txt-content').textContent = sub.textContent || 'None (Student only uploaded image script)';
+                document.getElementById('grade-file-content').textContent = sub.fileName ? `📎 ${sub.fileName}` : 'None';
+                document.getElementById('grade-value').value = sub.score !== null ? sub.score : 85;
+                gradeModal.classList.add('open');
+            }
+        }
+
+        function closeGradeModal() {
+            gradeModal.classList.remove('open');
+            activeGradeSubId = null;
+        }
+
+        function saveWrittenGrade() {
+            if (!activeGradeSubId) return;
+            const scoreValue = parseInt(document.getElementById('grade-value').value);
+            
+            if (isNaN(scoreValue) || scoreValue < 0 || scoreValue > 100) {
+                alert('Please enter a valid marks score (0 - 100)');
+                return;
+            }
+
+            // Save back to local storage
+            const subs = Database.getSubmissions();
+            const subIdx = subs.findIndex(s => s.id === activeGradeSubId);
+            if (subIdx !== -1) {
+                subs[subIdx].score = scoreValue;
+                localStorage.setItem('user_submissions', JSON.stringify(subs));
+            }
+
+            closeGradeModal();
+            loadSubmissionsTable();
+        }
+    </script>
+</body>
+</html>
