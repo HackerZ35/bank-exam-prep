@@ -44,7 +44,7 @@
                     <div style="display: flex; gap: 15px; font-size: 0.75rem; margin-bottom: 1.25rem;">
                         <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-success);"></span> Answered</span>
                         <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-warning);"></span> Flagged</span>
-                        <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #E2E8F0; border: 1px solid var(--border-color);"></span> Unanswered</span>
+                        <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #E5E7EB; border: 1px solid var(--border-color);"></span> Unanswered</span>
                     </div>
 
                     <div class="omr-grid" id="omr-grid-container">
@@ -262,7 +262,7 @@
                 const statusSymbol = isCorrect ? '<i class="fa-solid fa-circle-check"></i>' : userAns === null ? '<i class="fa-regular fa-circle"></i>' : '<i class="fa-solid fa-circle-xmark"></i>';
 
                 explanationHTML += `
-                    <div style="margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem;">
+                    <div style="margin-bottom: 1.5rem; border-bottom: 1px solid #E5E7EB; padding-bottom: 1rem;">
                         <strong style="display:block; margin-bottom: 5px;">Q${idx + 1}: ${q.q}</strong>
                         <span style="${statusColor}; font-size: 0.85rem; display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
                             ${statusSymbol} Your Choice: ${userSelectedText}
